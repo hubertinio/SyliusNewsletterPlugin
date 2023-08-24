@@ -1,0 +1,35 @@
+sylius_grid:
+    templates:
+        action:
+            export_newsletter_emails: "@DotitSyliusNewsletterPlugin/Admin/Newsletter/Grid/Action/exportEmail.html.twig"
+    grids:
+        dotit_sylius_newsletter_plugin_admin_newsletter:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: Dotit\SyliusNewsletterPlugin\Entity\NewsletterSubscription
+            fields:
+                email:
+                    type: string
+                    label: dotit_sylius_newsletter_plugin.ui.email
+                shopUser:
+                    type: string
+                    label: dotit_sylius_newsletter_plugin.ui.shopUser
+            filters:
+                email:
+                    type: string
+                    label: sylius.ui.email
+                shopUser:
+                    type: string
+                    label: dotit_sylius_newsletter_plugin.ui.shopUser
+            actions:
+                main:
+                    create:
+                        type: create
+                    export_emails:
+                        type: export_newsletter_emails
+                item:
+                    update:
+                        type: update
+                    delete:
+                        type: delete

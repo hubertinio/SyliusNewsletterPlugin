@@ -1,0 +1,9 @@
+sylius_resource:
+    resources:
+        dotit_sylius_newsletter_plugin.newsletter:
+            driver: doctrine/orm
+            classes:
+                model: Dotit\SyliusNewsletterPlugin\Entity\NewsletterSubscription
+                interface: Dotit\SyliusNewsletterPlugin\Entity\NewsletterSubscriptionInterface
+                controller: Dotit\SyliusNewsletterPlugin\Controller\NewsletterSubscriptionController
+                factory: Sylius\Component\Resource\Factory\Factory

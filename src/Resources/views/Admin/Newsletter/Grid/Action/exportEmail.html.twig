@@ -1,0 +1,9 @@
+<form id="dotit-update-emails" class="dotit-update-emails"
+      action="{{ path('dotit_sylius_newsletter_plugin_admin_export_emails') }}" method="post">
+    <input type="hidden" name="_method" value="PUT" />
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('export-newsletter-emails') }}" />
+    <button class="ui labeled loadable icon button sylius-save-position" type="submit">
+        <i class="icon download"></i>
+        {{ 'dotit_sylius_newsletter_plugin.ui.download_csv'|trans }}
+    </button>
+</form>

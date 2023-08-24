@@ -1,0 +1,23 @@
+dotit_sylius_newsletter_plugin_admin_newsletter:
+    resource: |
+        alias: dotit_sylius_newsletter_plugin.newsletter
+        section: admin
+        templates: "@SyliusAdmin/Crud"
+        except: ['show']
+        redirect: index
+        grid: dotit_sylius_newsletter_plugin_admin_newsletter
+        permission: true
+        vars:
+            all:
+                subheader: dotit_sylius_newsletter_plugin.ui.manage_newsletters
+                templates:
+                    form: '@DotitSyliusNewsletterPlugin/Admin/Newsletter/_form.html.twig'
+            index:
+                icon: envelope
+    type: sylius.resource
+    
+dotit_sylius_newsletter_plugin_admin_export_emails:
+    path: /newsletters/export
+    methods: [PUT]
+    defaults:
+        _controller: dotit_sylius_newsletter_plugin.controller.newsletter::exportAction

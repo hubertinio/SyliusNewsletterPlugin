@@ -1,0 +1,2 @@
+dotit_sylius_newsletter_plugin_admin_newsletter:
+    resource: admin/newsletter.yaml

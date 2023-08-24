@@ -1,0 +1,5 @@
+{% if 'create' in app.request.attributes.get('_route') %}
+    {% include '@DotitSyliusNewsletterPlugin/Admin/Newsletter/_create_form.html.twig' %}
+{% else %}
+    {% include '@DotitSyliusNewsletterPlugin/Admin/Newsletter/_update_form.html.twig' %}
+{% endif %}

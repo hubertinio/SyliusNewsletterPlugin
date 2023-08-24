@@ -1,0 +1,52 @@
+services:
+    # Services for your entities
+    Dotit\SyliusNewsletterPlugin\Entity\NewsletterSubscription:
+        class: Dotit\SyliusNewsletterPlugin\Entity\NewsletterSubscription
+        tags:
+            - { name: doctrine.orm.entity }
+    # Services for your controllers
+    Dotit\SyliusNewsletterPlugin\Controller\AddEmailToNewsletterAction:
+        tags:
+            - { name: 'controller.service_arguments' }
+        arguments:
+            $entityManager: '@doctrine.orm.default_entity_manager'
+            $userContext: '@Sylius\Bundle\ApiBundle\Context\UserContextInterface'
+    Dotit\SyliusNewsletterPlugin\Controller\UpdateEmailFromNewsletterAction:
+        tags:
+            - { name: 'controller.service_arguments' }
+        arguments:
+            $entityManager: '@doctrine.orm.default_entity_manager'
+            $userContext: '@Sylius\Bundle\ApiBundle\Context\UserContextInterface'
+    Dotit\SyliusNewsletterPlugin\Controller\RemoveEmailFromNewsletterAction:
+        tags:
+            - { name: 'controller.service_arguments' }
+        arguments:
+            $entityManager: '@doctrine.orm.default_entity_manager'
+            $userContext: '@Sylius\Bundle\ApiBundle\Context\UserContextInterface'
+    Dotit\SyliusNewsletterPlugin\Controller\GetEmailFromNewsletterAction:
+        tags:
+            - { name: 'controller.service_arguments' }
+        arguments:
+            $entityManager: '@doctrine.orm.default_entity_manager'
+            $userContext: '@Sylius\Bundle\ApiBundle\Context\UserContextInterface'
+            $responder: '@Dotit\SyliusNewsletterPlugin\Responder\GetEmailFromNewsletterResponder'
+    # Services for your responders
+    Dotit\SyliusNewsletterPlugin\Responder\GetEmailFromNewsletterResponder:
+        arguments:
+            $serializer: '@serializer'
+    # Services for your Menus
+    dotit_sylius_newsletter_plugin.event_listener.admin.menu_builder:
+        class: Dotit\SyliusNewsletterPlugin\Menu\AdminMenuListener
+        tags:
+            - { name: kernel.event_listener, event: sylius.menu.admin.main, method: addAdminMenuItems }
+    dotit_sylius_newsletter_plugin.menu_builder.admin.newsletter_form:
+        class: Dotit\SyliusNewsletterPlugin\Menu\NewsletterFormMenuBuilder
+        arguments:
+            - '@knp_menu.factory'
+            - '@event_dispatcher'
+        tags:
+            - { name: knp_menu.menu_builder, method: createMenu, alias: dotit_sylius_newsletter_plugin.admin.newsletter_form }
+    # Services for your repositories
+    Dotit\SyliusNewsletterPlugin\Repository\NewsletterSubscriptionRepository:
+        arguments:
+            $registry: '@doctrine'
