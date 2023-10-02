@@ -48,6 +48,15 @@ class AddEmailToNewsletterAction
         /** @var ShopUserInterface|null $user */
         $user = $this->userContext->getUser();
 
+        if($user!==null) {
+            $newsletterSubscription = $this->entityManager
+                ->getRepository(NewsletterSubscription::class)
+                ->findOneBy(['shopUser' => $user]);
+            if ($newsletterSubscription) {
+                throw new AccessDeniedHttpException('You have already a mail in use.', null, Response::HTTP_UNAUTHORIZED);
+            }
+        }
+        
         // Create a new NewsletterSubscription entity and set the email
         $newsletterSubscription = new NewsletterSubscription();
         $newsletterSubscription->setEmail($email);
