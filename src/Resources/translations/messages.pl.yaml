@@ -1,0 +1,12 @@
+dotit_sylius_newsletter_plugin:
+    ui:
+        newsletters: Newsletter
+        email: Email
+        manage_newsletters: Zarządzaj newsletter
+        shopUser: Email klienta
+        new_newsletter: Nowy email
+        edit_newsletter: Edytuj email
+        download_csv: Pobierz CSV
+    menu:
+        admin:
+            newsletter: Newsletter
