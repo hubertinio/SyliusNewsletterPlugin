@@ -1,7 +1,7 @@
 {
     "name": "dotit/sylius-newsletter-plugin",
     "description": "DOTIT newsletter plugin for Sylius.",
-    "version": "1.12.3",
+    "version": "1.12.4",
     "license": "MIT",
     "type": "sylius-plugin",
     "keywords": [
