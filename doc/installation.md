@@ -17,7 +17,7 @@ return [
 
 dotit_sylius_newsletter_plugin_admin:
     resource: "@DotitSyliusNewsletterPlugin/Resources/config/routing/admin.yaml"
-    prefix: /admin
+    prefix: '/%sylius_admin.path_name%'
 ```
 3. Add the config to the _sylius.yaml
 
