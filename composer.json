@@ -1,5 +1,5 @@
 {
-    "name": "dotit/sylius-newsletter-plugin",
+    "name": "hubertinio/sylius-newsletter-plugin",
     "description": "DOTIT newsletter plugin for Sylius.",
     "license": "MIT",
     "type": "sylius-plugin",
