@@ -26,3 +26,12 @@ dotit_sylius_newsletter_plugin_admin:
 
 - { resource: "@DotitSyliusNewsletterPlugin/Resources/config/config.yaml" }
 ```
+
+4. Add new entries to your `webpack.config.js`
+```js
+## ./webpack.config.js
+
+## Shop config
+    .addEntry('dotit-newsletter-shop', 'vendor/dotit/sylius-newsletter-plugin/src/Resources/assets/shop/entry.js')
+
+```
