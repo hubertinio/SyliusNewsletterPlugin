@@ -1,7 +1,6 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const currentLocale = "{{ app.request.locale }}";
-    console.log("Current Locale:", currentLocale);
 
     const translations = {
         invalid_email: "{{ 'dotit_sylius_newsletter_plugin.message.invalid_email'|trans|e('js') }}",
