@@ -29,9 +29,22 @@ dotit_sylius_newsletter_plugin_admin:
 
 4. Add new entries to your `webpack.config.js`
 ```js
-## ./webpack.config.js
+// ./webpack.config.js
 
-## Shop config
+// Shop config
     .addEntry('dotit-newsletter-shop', 'vendor/dotit/sylius-newsletter-plugin/src/Resources/assets/shop/entry.js')
 
+```
+
+5. Add scripts functions to your templates
+
+```yaml
+sylius_ui:
+    events:
+        sylius.shop.layout.javascripts:
+            blocks:
+                sylius_shop:
+                    template: "@DotitSyliusNewsletterPlugin/Shop/_scripts.html.twig"
+                    priority: 10
+        
 ```
