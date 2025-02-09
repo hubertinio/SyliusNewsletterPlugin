@@ -11,6 +11,7 @@ services:
         arguments:
             $entityManager: '@doctrine.orm.default_entity_manager'
             $userContext: '@Sylius\Bundle\ApiBundle\Context\UserContextInterface'
+            $translator: '@translator'
     Dotit\SyliusNewsletterPlugin\Controller\UpdateEmailFromNewsletterAction:
         tags:
             - { name: 'controller.service_arguments' }

@@ -1,63 +1,79 @@
+{{ dump() }}
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    alert('Custom Sylius Plugin JS Loaded');
+    // alert('dotit-newsletter-form JS Loaded');
+    const currentLocale = "{{ app.request.locale }}";
+    console.log("Current Locale:", currentLocale);
+
+    const translations = {
+        invalid_email: "{{ 'dotit_sylius_newsletter_plugin.message.invalid_email'|trans|e('js') }}",
+        error_occured: "{{ 'dotit_sylius_newsletter_plugin.message.error_occured'|trans|e('js') }}"
+    };
+    console.log('dotit-newsletter-form translations', translations);
+
 
     const form = document.querySelector(".dotit-newsletter-form");
 
     if (!form) {
-        console.error("Formularz newslettera nie został znaleziony.");
         return;
     }
 
     form.addEventListener("submit", async function (event) {
-    event.preventDefault(); // Zapobiega domyślnej akcji wysłania formularza
+        event.preventDefault();
 
-    const emailInput = form.querySelector('input[name="email"]');
-    const messageDiv = form.querySelector(".form-message");
+        const emailInput = form.querySelector('input[name="email"]');
+        const messageDiv = form.querySelector(".form-message");
 
-    if (!emailInput) {
-        console.error("Pole email nie zostało znalezione.");
-        return;
-    }
-
-    const email = emailInput.value.trim();
-
-    if (!email) {
-        messageDiv.textContent = "Podaj poprawny adres e-mail.";
-        messageDiv.classList.remove("d-none");
-        messageDiv.classList.add("text-danger");
-        return;
-    }
-
-    try {
-        const response = await fetch(form.action, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        
-        body: JSON.stringify({ email: email }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-        messageDiv.textContent = "Dziękujemy za subskrypcję!";
-        messageDiv.classList.remove("d-none", "text-danger");
-        messageDiv.classList.add("text-success");
-        form.reset();
-        } else {
-        messageDiv.textContent = data["hydra:description"] || "Wystąpił błąd.";
-        messageDiv.classList.remove("d-none", "text-success");
-        messageDiv.classList.add("text-danger");
+        if (!emailInput) {
+            console.error("There is no email field.");
+            return;
         }
-    } catch (error) {
-        console.error("Błąd sieci:", error);
-        messageDiv.textContent = "Wystąpił problem z połączeniem.";
-        messageDiv.classList.remove("d-none", "text-success");
-        messageDiv.classList.add("text-danger");
-    }
+
+        const email = emailInput.value.trim();
+
+        if (!email) {
+            messageDiv.textContent = translations.invalid_email;
+            messageDiv.classList.remove("d-none");
+            messageDiv.classList.add("text-danger");
+            return;
+        }
+
+        try {
+            const response = await fetch(form.action, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+
+                body: JSON.stringify({
+                    email: email,
+                    locale: currentLocale
+                }),
+            });
+
+            const data = await response.json();
+
+            console.log('dotit-newsletter-form response', response);
+            console.log('dotit-newsletter-form data', data);
+
+            if (response.ok) {
+                messageDiv.textContent = data.message || response.message;
+                messageDiv.classList.remove("d-none", "text-danger");
+                messageDiv.classList.add("text-success");
+                form.reset();
+            } else {
+                messageDiv.textContent = data.message || data["hydra:description"] || translations.error_occured;
+                messageDiv.classList.remove("d-none", "text-success");
+                messageDiv.classList.add("text-danger");
+            }
+        } catch (error) {
+            console.error('dotit-newsletter-form error', error);
+
+            messageDiv.textContent = data.message || translations.error_occured;
+            messageDiv.classList.remove("d-none", "text-success");
+            messageDiv.classList.add("text-danger");
+        }
     });
 });
-
-<script>
+</script>

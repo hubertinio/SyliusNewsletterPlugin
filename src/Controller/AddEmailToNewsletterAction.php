@@ -11,73 +11,84 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Exception;
 
 class AddEmailToNewsletterAction
 {
     private EntityManagerInterface $entityManager;
     private UserContextInterface $userContext;
+    private TranslatorInterface $translator;
 
-    public function __construct
-    (
+    public function __construct(
         EntityManagerInterface $entityManager,
         UserContextInterface $userContext,
-    )
-    {
+        TranslatorInterface $translator,
+    ) {
         $this->entityManager = $entityManager;
         $this->userContext = $userContext;
+        $this->translator = $translator;
     }
 
     public function __invoke(Request $request): JsonResponse
     {
-        // Get the email from the request
-        $email = json_decode($request->getContent(), true)['email'] ?? null;
+        $locale = 'pl';
 
-        if (!$email) {
-            throw new NotFoundHttpException('Email not provided.', null, Response::HTTP_NOT_FOUND);
-        }
+        try {
+            $data = json_decode($request->getContent(), true);
+            $email = $data['email'] ?? null;
+            $locale = $data['locale'] ?? 'pl';
 
-        // Find the newsletter subscription entity by email
-        $newsletterSubscription = $this->entityManager
-            ->getRepository(NewsletterSubscription::class)
-            ->findOneBy(['email' => $email]);
+            if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new NotFoundHttpException('dotit_sylius_newsletter_plugin.exception.email_not_found', null, Response::HTTP_NOT_FOUND);
+            }
 
-        if ($newsletterSubscription) {
-            throw new AccessDeniedHttpException('Email already in use.', null, Response::HTTP_UNAUTHORIZED);
-        }
-
-        /** @var ShopUserInterface|null $user */
-        $user = $this->userContext->getUser();
-
-        if($user!==null) {
             $newsletterSubscription = $this->entityManager
                 ->getRepository(NewsletterSubscription::class)
-                ->findOneBy(['shopUser' => $user]);
+                ->findOneBy(['email' => $email]);
+
             if ($newsletterSubscription) {
-                throw new AccessDeniedHttpException('You have already a mail in use.', null, Response::HTTP_UNAUTHORIZED);
+                throw new AccessDeniedHttpException('dotit_sylius_newsletter_plugin.message.email_already_in_use', null, Response::HTTP_UNAUTHORIZED);
             }
+
+            /** @var ShopUserInterface|null $user */
+            $user = $this->userContext->getUser();
+
+            if (null !== $user) {
+                $newsletterSubscription = $this->entityManager
+                    ->getRepository(NewsletterSubscription::class)
+                    ->findOneBy(['shopUser' => $user]);
+
+                if ($newsletterSubscription) {
+                    throw new AccessDeniedHttpException('dotit_sylius_newsletter_plugin.message.email_already_in_use', null, Response::HTTP_UNAUTHORIZED);
+                }
+            }
+
+            $newsletterSubscription = new NewsletterSubscription();
+            $newsletterSubscription->setEmail($email);
+
+            if ($user instanceof ShopUserInterface) {
+                $newsletterSubscription->setShopUser($user);
+            }
+
+            $this->entityManager->persist($newsletterSubscription);
+            $this->entityManager->flush();
+
+            $data['id'] = $newsletterSubscription->getId();
+            $data['email'] = $newsletterSubscription->getEmail();
+            $data['message'] = $this->translator->trans('dotit_sylius_newsletter_plugin.message.subscribed', [], null, $locale);
+            $data['locale'] = $locale; // debug;
+
+            if (null !== $user) {
+                $data['shopUser']['id'] = $newsletterSubscription->getShopUser()->getId();
+                $data['shopUser']['email'] = $newsletterSubscription->getShopUser()->getUsername();
+            }
+
+            return new JsonResponse($data, Response::HTTP_CREATED);
+        } catch (Exception $exception) {
+            $message = $this->translator->trans($exception->getMessage(), [], null, $locale);
+
+            return new JsonResponse(['message' => $message], $exception->getStatusCode());
         }
-        
-        // Create a new NewsletterSubscription entity and set the email
-        $newsletterSubscription = new NewsletterSubscription();
-        $newsletterSubscription->setEmail($email);
-        if ($user instanceof ShopUserInterface) {
-            $newsletterSubscription->setShopUser($user);
-        }
-
-        // Persist the entity to the database
-        $this->entityManager->persist($newsletterSubscription);
-        $this->entityManager->flush();
-
-        $data['id'] = $newsletterSubscription->getId();
-        $data['email'] = $newsletterSubscription->getEmail();
-
-        // Check if shopUser exists before accessing its properties
-        if ($user!==null) {
-            $data['shopUser']['id'] = $newsletterSubscription->getShopUser()->getId();
-            $data['shopUser']['email'] = $newsletterSubscription->getShopUser()->getUsername();
-        }
-
-        // Return JsonResponse with $data array
-        return new JsonResponse($data, Response::HTTP_CREATED);
     }
 }
