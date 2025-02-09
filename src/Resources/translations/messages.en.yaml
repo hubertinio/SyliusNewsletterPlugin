@@ -10,3 +10,10 @@ dotit_sylius_newsletter_plugin:
     menu:
         admin:
             newsletter: Newsletter
+    message:
+        email_not_found: Email was not found
+        email_already_in_use: Email is already in use
+        subscribed: Subscribed to the newsletter
+        invalid_email: Please enter a valid email address
+        success: Thank you for subscribing
+        error_occured: An error occurred

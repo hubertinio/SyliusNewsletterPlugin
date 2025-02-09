@@ -1,8 +1,5 @@
-{{ dump() }}
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // alert('dotit-newsletter-form JS Loaded');
     const currentLocale = "{{ app.request.locale }}";
     console.log("Current Locale:", currentLocale);
 
@@ -10,8 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
         invalid_email: "{{ 'dotit_sylius_newsletter_plugin.message.invalid_email'|trans|e('js') }}",
         error_occured: "{{ 'dotit_sylius_newsletter_plugin.message.error_occured'|trans|e('js') }}"
     };
-    console.log('dotit-newsletter-form translations', translations);
-
 
     const form = document.querySelector(".dotit-newsletter-form");
 
@@ -54,9 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = await response.json();
 
-            console.log('dotit-newsletter-form response', response);
-            console.log('dotit-newsletter-form data', data);
-
             if (response.ok) {
                 messageDiv.textContent = data.message || response.message;
                 messageDiv.classList.remove("d-none", "text-danger");
@@ -68,8 +60,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 messageDiv.classList.add("text-danger");
             }
         } catch (error) {
-            console.error('dotit-newsletter-form error', error);
-
             messageDiv.textContent = data.message || translations.error_occured;
             messageDiv.classList.remove("d-none", "text-success");
             messageDiv.classList.add("text-danger");

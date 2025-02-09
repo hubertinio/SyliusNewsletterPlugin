@@ -32,12 +32,13 @@ class AddEmailToNewsletterAction
 
     public function __invoke(Request $request): JsonResponse
     {
-        $locale = 'pl';
+        $locale = 'en';
 
         try {
             $data = json_decode($request->getContent(), true);
             $email = $data['email'] ?? null;
-            $locale = $data['locale'] ?? 'pl';
+            $locale = $data['locale'] ?? $locale;
+            $locale = $data['locale'] = substr($locale, 0, 2);
 
             if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 throw new NotFoundHttpException('dotit_sylius_newsletter_plugin.exception.email_not_found', null, Response::HTTP_NOT_FOUND);
@@ -77,7 +78,7 @@ class AddEmailToNewsletterAction
             $data['id'] = $newsletterSubscription->getId();
             $data['email'] = $newsletterSubscription->getEmail();
             $data['message'] = $this->translator->trans('dotit_sylius_newsletter_plugin.message.subscribed', [], null, $locale);
-            $data['locale'] = $locale; // debug;
+            $data['data'] = $data; // debug;
 
             if (null !== $user) {
                 $data['shopUser']['id'] = $newsletterSubscription->getShopUser()->getId();
